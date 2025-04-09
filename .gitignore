@@ -1,0 +1,77 @@
+# --- SISTEMA / METADATOS ---
+# Archivos ocultos de sistema (Windows, macOS, etc.)
+.DS_Store
+Thumbs.db
+
+# --- PYTHON ---
+# Cache de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribución / empaquetado
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# --- ENTORNOS VIRTUALES ---
+env/
+.venv/
+venv/
+ENV/
+# Si tu carpeta de entorno se llama diferente, reemplaza o agrega su nombre aquí
+# Por ejemplo: .env
+
+# --- SEGURIDAD Y CONFIGURACIÓN ---
+# Variables de entorno (sensible)
+.env
+.env.*
+# Asegúrate de no exponer información sensible en tu repositorio
+
+# --- BASE DE DATOS ---
+db.sqlite3
+*.sqlite3
+*.db
+*.dbdata/
+
+# --- DJANGO ESPECÍFICO ---
+# Archivos o directorios que se generan automáticamente (migraciones compiladas, etc.)
+*.pot
+*.pyc
+
+# Archivos estáticos si se generan en la carpeta /static
+# (en caso de que tengas una carpeta estática generada por collectstatic)
+staticfiles/
+static_root/
+# Ajusta estas líneas a tu estructura de proyecto
+
+# --- LOGS ---
+*.log
+logs/
+log/
+
+# --- DOCKER ---
+# Si generas volúmenes, metadatos, etc.
+docker-compose.override.yml
+# Ignora imágenes locales o contenedores si los exportas
+*.tar
+*.img
+
+# --- OTRAS HERRAMIENTAS / IDE ---
+# Ejemplos para Visual Studio Code, PyCharm, etc.
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- NOTAS ---
+# Si generas documentación o notas en HTML/Markdown
+docs/_build/
+*.rst
+*.md
+
+# Ajusta o quita lo que no necesites.
+# Por ejemplo, si quieres subir tu docker-compose.yml y Dockerfile, 
+# elimínalos de esta lista. 
