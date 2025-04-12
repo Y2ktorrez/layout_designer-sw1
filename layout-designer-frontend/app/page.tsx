@@ -1,9 +1,8 @@
-import Image from "next/image";
+'use client';
+
+import { redirect } from 'next/navigation';
 
 export default function Home() {
-  return (
-    <div>
-      <p>Hello, World!</p>
-    </div>
-  );
+  redirect('/auth/login');
+  return null;
 }

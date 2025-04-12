@@ -47,7 +47,7 @@ export default function Home() {
         className="w-full max-w-sm bg-white p-8 rounded-md shadow-md"
       >
         <div className="mb-6 text-center space-y-2">
-          <h1 className="text-2xl font-semibold">Login</h1>
+          <h1 className="text-2xl font-semibold">Sign up</h1>
           <p className="text-sm text-gray-600">
             Enter your credentials to access your account
           </p>
