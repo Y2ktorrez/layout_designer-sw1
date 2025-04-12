@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { register } from "@/lib/api"; // 👈 importante
+import { register } from "@/lib/api";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -113,13 +113,11 @@ export default function RegisterPage() {
             Github
           </Button>
           <Button variant="outline" className="w-full flex items-center justify-center">
-            {/* Google Icon */}
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               className="mr-2 h-5 w-5" 
               viewBox="0 0 48 48"
             >
-              {/* Rutas SVG recortadas para brevedad */}
               <path fill="#EA4335" d="..." />
               <path fill="#4285F4" d="..." />
               <path fill="#FBBC05" d="..." />

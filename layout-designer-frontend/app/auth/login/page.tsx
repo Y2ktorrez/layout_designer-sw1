@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-import { login } from "@/lib/api"; // 👈 importa la función login
+import { login } from "@/lib/api";
 
 export default function Home() {
   const router = useRouter();
@@ -25,12 +25,10 @@ export default function Home() {
     try {
       const data = await login(email, password);
 
-      // Guardar tokens en localStorage
       localStorage.setItem("access", data.token.access);
       localStorage.setItem("refresh", data.token.refresh);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Redirigir al dashboard o a donde quieras
       router.push("/dashboard");
     } catch (err: any) {
       console.error(err);
@@ -53,7 +51,6 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Mensaje de error */}
         {error && (
           <p className="text-red-500 text-sm text-center mb-4">{error}</p>
         )}
@@ -125,10 +122,8 @@ export default function Home() {
             Github
           </Button>
           <Button variant="outline" className="w-full flex items-center justify-center">
-            {/* Icono Google */}
             <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 h-5 w-5" viewBox="0 0 48 48">
               <path fill="#EA4335" d="M24 9.5..." />
-              {/* ... rutas SVG recortadas para brevedad */}
             </svg>
             Google
           </Button>
