@@ -31,7 +31,7 @@ const Navbar = () => {
                 className="flex items-center gap-1.5 text-sm hover:text-primary transition-colors"
               >
                 <HomeIcon size={16} />
-                <span>Home</span>
+                <span>Layout designer</span>
               </Link>
 
               <Link
@@ -39,7 +39,7 @@ const Navbar = () => {
                 className="flex items-center gap-1.5 text-sm hover:text-primary transition-colors"
               >
                 <DumbbellIcon size={16} />
-                <span>Generate</span>
+                <span>Sketch</span>
               </Link>
 
               <Link
@@ -47,7 +47,7 @@ const Navbar = () => {
                 className="flex items-center gap-1.5 text-sm hover:text-primary transition-colors"
               >
                 <UserIcon size={16} />
-                <span>Profile</span>
+                <span>Upload Diagram</span>
               </Link>
               <Button
                 asChild
