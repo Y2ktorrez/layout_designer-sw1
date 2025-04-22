@@ -2,7 +2,7 @@ import React from 'react'
 import GrapesFooter from './components/Footer'
 
 export const metadata = {
-  title: "Editor (sin nav/footer)",
+  title: "codeflex.ai",
 }
 
 export default function GrapesJsLayout({ children }: {
