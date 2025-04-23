@@ -1,12 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useUser } from "@clerk/nextjs";
 import { ZapIcon } from "lucide-react";
 import Link from "next/link";
 
 const GrapesFooter = () => {
-  const { isSignedIn } = useUser();
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border py-3">

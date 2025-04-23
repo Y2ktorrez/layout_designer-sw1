@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -11,21 +11,27 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import { createProject } from "@/lib/project";
 
 interface Props {
   triggerLabel?: string;
   variant?: "default" | "outline";
 }
 
-export const CreateProjectDialog = ({ triggerLabel = "Start Designing", variant = "outline" }: Props) => {
+export const CreateProjectDialog = ({
+  triggerLabel = "Start Designing",
+  variant = "outline",
+}: Props) => {
   const router = useRouter();
+  const { accessToken } = useAuth();
+
   const [isOpen, setIsOpen] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [invitationLink, setInvitationLink] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
-  const [isInvitationDialogOpen, setIsInvitationDialogOpen] = useState(false); // Dialog for the invitation link input
+  const [isInvitationDialogOpen, setIsInvitationDialogOpen] = useState(false);
   const [inputLink, setInputLink] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,19 +39,20 @@ export const CreateProjectDialog = ({ triggerLabel = "Start Designing", variant 
     setIsSubmitting(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const response = await axios.post(`${apiUrl}/api/projects/`, {
-        name: projectName,
-        description: projectDescription,
-      });
+      const response = await createProject(
+        {
+          name: projectName,
+          description: projectDescription,
+        },
+        accessToken!
+      );
 
-      console.log("Proyecto creado:", response.data);
+      console.log("Proyecto creado:", response);
       setProjectName("");
       setProjectDescription("");
-      setInvitationLink(response.data.data.invitation_link);
-      setIsOpen(false); // Cerrar el formulario de creación del proyecto
-      setIsSuccessDialogOpen(true); // Abrir el dialogo de éxito
-
+      setInvitationLink(response.invitation_link);
+      setIsOpen(false);
+      setIsSuccessDialogOpen(true);
     } catch (error) {
       console.error("Error al crear el proyecto:", error);
     } finally {
@@ -55,11 +62,10 @@ export const CreateProjectDialog = ({ triggerLabel = "Start Designing", variant 
 
   const handleCopy = () => {
     if (invitationLink) {
-      navigator.clipboard.writeText(invitationLink).then(() => {
-        console.log("Enlace copiado al portapapeles");
-      }).catch(err => {
-        console.error("Error al copiar el enlace:", err);
-      });
+      navigator.clipboard
+        .writeText(invitationLink)
+        .then(() => console.log("Enlace copiado al portapapeles"))
+        .catch((err) => console.error("Error al copiar el enlace:", err));
     }
   };
 
@@ -70,14 +76,13 @@ export const CreateProjectDialog = ({ triggerLabel = "Start Designing", variant 
   const handleInvitationLinkSubmit = () => {
     if (inputLink) {
       setInvitationLink(inputLink);
-      setIsInvitationDialogOpen(false); // Cerrar el diálogo de invitación
-      router.push(`/projects/${inputLink}`); // Redirigir a la página del proyecto
+      setIsInvitationDialogOpen(false);
+      router.push(`/projects/${inputLink}`);
     }
   };
 
   return (
     <>
-      {/* Formulario para crear el proyecto */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button
@@ -89,57 +94,66 @@ export const CreateProjectDialog = ({ triggerLabel = "Start Designing", variant 
           </Button>
         </DialogTrigger>
 
-        <DialogContent className="sm:max-w-md">
-          <DialogTitle className="text-xl font-medium">Create New Project</DialogTitle>
+        <DialogContent className="sm:max-w-md bg-[#0F111A] rounded-xl shadow-lg">
+          <DialogTitle className="text-xl font-medium">
+            Create New Project
+          </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
             Enter the details for your new project
           </DialogDescription>
 
-          <form onSubmit={handleSubmit} className="space-y-5 py-4">
-            <div className="space-y-2">
-              <label htmlFor="projectName" className="text-sm font-medium">
-                Project Name
-              </label>
-              <input
-                type="text"
-                id="projectName"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm 
-                focus:outline-none focus:ring-1 focus:ring-primary transition-shadow"
-                placeholder="Enter project name"
-                required
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-6 py-4 text-white">
+            <div className="space-y-3">
+              <div>
+                <label
+                  htmlFor="projectName"
+                  className="text-sm font-semibold mb-1.5 block"
+                >
+                  Project Name
+                </label>
+                <input
+                  type="text"
+                  id="projectName"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#181B29] border border-[#3C3F4E] text-white rounded-md text-sm 
+        focus:outline-none focus:ring-2 focus:ring-[#00CFFF] transition-shadow"
+                  placeholder="Enter project name"
+                  required
+                />
+              </div>
 
-            <div className="space-y-2">
-              <label htmlFor="projectDescription" className="text-sm font-medium">
-                Project Description
-              </label>
-              <textarea
-                id="projectDescription"
-                value={projectDescription}
-                onChange={(e) => setProjectDescription(e.target.value)}
-                className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm 
-                focus:outline-none focus:ring-1 focus:ring-primary transition-shadow min-h-24 resize-none"
-                placeholder="Describe your project"
-                required
-              />
-            </div>
+              <div>
+                <label
+                  htmlFor="projectDescription"
+                  className="text-sm font-semibold mb-1.5 block"
+                >
+                  Project Description
+                </label>
+                <textarea
+                  id="projectDescription"
+                  value={projectDescription}
+                  onChange={(e) => setProjectDescription(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#181B29] border border-[#3C3F4E] text-white rounded-md text-sm 
+        focus:outline-none focus:ring-2 focus:ring-[#00CFFF] min-h-24 resize-none transition-shadow"
+                  placeholder="Describe your project"
+                  required
+                />
+              </div>
 
-            {/* Pregunta sobre el link de invitación */}
-            <div className="space-y-2">
-              <label htmlFor="invitationLinkQuestion" className="text-sm font-medium">
-                Do you have an invitation link?
-              </label>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsInvitationDialogOpen(true)}
-                className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm"
-              >
-                Enter Invitation Link
-              </Button>
+              <div>
+                <label className="text-sm font-semibold mb-1.5 block">
+                  Do you have an invitation link?
+                </label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsInvitationDialogOpen(true)}
+                  className="w-full px-3 py-2 bg-[#181B29] border border-[#3C3F4E] text-white rounded-md text-sm hover:bg-[#23263a]"
+                >
+                  Enter Invitation Link
+                </Button>
+              </div>
             </div>
 
             <div className="flex justify-end gap-3 pt-2">
@@ -147,14 +161,14 @@ export const CreateProjectDialog = ({ triggerLabel = "Start Designing", variant 
                 type="button"
                 variant="outline"
                 onClick={() => setIsOpen(false)}
-                className="px-4"
+                className="px-4 text-white border border-[#3C3F4E] hover:bg-[#23263a]"
                 disabled={isSubmitting}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 px-4"
+                className="px-4 bg-[#00CFFF] hover:bg-[#00b5e6] text-black font-semibold"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Creating..." : "Create"}
@@ -164,10 +178,14 @@ export const CreateProjectDialog = ({ triggerLabel = "Start Designing", variant 
         </DialogContent>
       </Dialog>
 
-      {/* Diálogo para ingresar un enlace de invitación al proyecto */}
-      <Dialog open={isInvitationDialogOpen} onOpenChange={setIsInvitationDialogOpen}>
+      <Dialog
+        open={isInvitationDialogOpen}
+        onOpenChange={setIsInvitationDialogOpen}
+      >
         <DialogContent className="sm:max-w-md">
-          <DialogTitle className="text-xl font-medium">Enter Invitation Link</DialogTitle>
+          <DialogTitle className="text-xl font-medium">
+            Enter Invitation Link
+          </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
             Enter the invitation link to go to the specific project.
           </DialogDescription>
@@ -201,10 +219,11 @@ export const CreateProjectDialog = ({ triggerLabel = "Start Designing", variant 
         </DialogContent>
       </Dialog>
 
-      {/* Diálogo de éxito después de la creación del proyecto */}
       <Dialog open={isSuccessDialogOpen} onOpenChange={setIsSuccessDialogOpen}>
         <DialogContent className="sm:max-w-md">
-          <DialogTitle className="text-xl font-medium">Project Created Successfully</DialogTitle>
+          <DialogTitle className="text-xl font-medium">
+            Project Created Successfully
+          </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
             Your project has been created. You can now use the invitation link.
           </DialogDescription>

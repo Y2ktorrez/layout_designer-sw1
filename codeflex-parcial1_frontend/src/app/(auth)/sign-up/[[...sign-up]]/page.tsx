@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/lib/auth";
-import { useAuth } from "@/context/AuthContext"; // ← Usamos el contexto
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignUpPage() {
   const [username, setUsername] = useState("");
@@ -125,7 +125,7 @@ export default function SignUpPage() {
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link
-            href="/auth/sign-in"
+            href="/sign-in"
             className="text-primary hover:underline font-medium"
           >
             Sign in
