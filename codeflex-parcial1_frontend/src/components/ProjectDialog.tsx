@@ -22,9 +22,11 @@ export const CreateProjectDialog = ({ triggerLabel = "Start Designing", variant 
   const [isOpen, setIsOpen] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [invitationLink, setInvitationLink] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
+  const [isInvitationDialogOpen, setIsInvitationDialogOpen] = useState(false); // Dialog for the invitation link input
+  const [inputLink, setInputLink] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +65,14 @@ export const CreateProjectDialog = ({ triggerLabel = "Start Designing", variant 
 
   const handleRedirect = () => {
     router.push("/grapesjs");
+  };
+
+  const handleInvitationLinkSubmit = () => {
+    if (inputLink) {
+      setInvitationLink(inputLink);
+      setIsInvitationDialogOpen(false); // Cerrar el diálogo de invitación
+      router.push(`/projects/${inputLink}`); // Redirigir a la página del proyecto
+    }
   };
 
   return (
@@ -117,6 +127,21 @@ export const CreateProjectDialog = ({ triggerLabel = "Start Designing", variant 
               />
             </div>
 
+            {/* Pregunta sobre el link de invitación */}
+            <div className="space-y-2">
+              <label htmlFor="invitationLinkQuestion" className="text-sm font-medium">
+                Do you have an invitation link?
+              </label>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsInvitationDialogOpen(true)}
+                className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm"
+              >
+                Enter Invitation Link
+              </Button>
+            </div>
+
             <div className="flex justify-end gap-3 pt-2">
               <Button
                 type="button"
@@ -136,6 +161,43 @@ export const CreateProjectDialog = ({ triggerLabel = "Start Designing", variant 
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Diálogo para ingresar un enlace de invitación al proyecto */}
+      <Dialog open={isInvitationDialogOpen} onOpenChange={setIsInvitationDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogTitle className="text-xl font-medium">Enter Invitation Link</DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">
+            Enter the invitation link to go to the specific project.
+          </DialogDescription>
+
+          <div className="space-y-2">
+            <label htmlFor="invitationLink" className="text-sm font-medium">
+              Invitation Link
+            </label>
+            <input
+              type="text"
+              id="invitationLink"
+              value={inputLink}
+              onChange={(e) => setInputLink(e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm 
+              focus:outline-none focus:ring-1 focus:ring-primary transition-shadow"
+              placeholder="Enter invitation link"
+              required
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleInvitationLinkSubmit}
+              className="px-4"
+            >
+              Go to Project
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
