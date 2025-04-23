@@ -62,6 +62,7 @@ THIRD_PARTY_APPS = [
 
 PROJECT_APPS = [
     'apps.authentication',
+    'apps.projects',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -183,7 +184,7 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'authentication.UserAccount'
 
 SIMPLE_JWT = {
-    "AUTH_HEADER_TYPES": ("JWT",),
+    "AUTH_HEADER_TYPES": ("Bearer",),
     "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=60),
     "ROTATE_REFRESH_TOKENS": True,

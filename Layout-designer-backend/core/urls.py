@@ -10,4 +10,5 @@ urlpatterns = [
     path("auth/", include("djoser.urls")),
     path("auth/", include("djoser.urls.jwt")),
     path('admin/', admin.site.urls),
+    path('projects/', include("apps.projects.urls")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
