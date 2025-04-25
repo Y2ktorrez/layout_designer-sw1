@@ -35,3 +35,24 @@ class ProjectRoom(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ChatMessage(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    room = models.ForeignKey(
+        ProjectRoom,
+        related_name='messages',
+        on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    content = models.TextField()
+    timestamp = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"[{self.timestamp:%Y-%m-%d %H:%M}] {self.user.username}: {self.content}"

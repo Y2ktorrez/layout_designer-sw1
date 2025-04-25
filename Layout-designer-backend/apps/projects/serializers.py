@@ -1,6 +1,6 @@
 # rooms/serializers.py
 from rest_framework import serializers
-from .models import ProjectRoom
+from .models import ProjectRoom, ChatMessage
 
 
 class ProjectRoomSerializer(serializers.ModelSerializer):
@@ -22,3 +22,10 @@ class ProjectRoomSerializer(serializers.ModelSerializer):
     # ---------- helpers ----------
     def get_invitation_link(self, obj):
         return obj.get_invitation_link()
+
+class ChatMessageSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = ChatMessage
+        fields = ['id', 'user', 'content', 'timestamp']

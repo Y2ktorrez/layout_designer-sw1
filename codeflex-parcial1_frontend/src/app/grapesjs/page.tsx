@@ -1,4 +1,4 @@
-import StudioEditorComponent from '@/app/grapesjs/components/StudioEditorComponent';
+import StudioEditorComponent from "@/components/StudioEditorComponent";
 
 export default function GrapesJSPage() {
   return (
