@@ -70,17 +70,38 @@ export const CreateProjectDialog = ({
   };
 
   const handleRedirect = () => {
-    router.push("/grapesjs");
+    if (invitationLink) {
+      const code = invitationLink.split("/").pop();
+      if (code) {
+        localStorage.setItem("current_invitation_code", code);
+      }
+      router.push("/grapesjs");
+    }
   };
 
   const handleInvitationLinkSubmit = () => {
     if (inputLink) {
-      setInvitationLink(inputLink);
-      setIsInvitationDialogOpen(false);
-      router.push(`/projects/${inputLink}`);
+      try {
+        // Extraer el código UUID desde el link
+        const code = inputLink.split("/").pop();
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  
+        if (code && uuidRegex.test(code)) {
+          localStorage.setItem("current_invitation_code", code); 
+          setInvitationLink(inputLink);
+          setIsInvitationDialogOpen(false);
+          setInputLink(""); // Opcional: limpia el input
+          router.push("/grapesjs"); // NAVEGAMOS A GRAPESJS para conectarnos
+        } else {
+          alert("❌ El link de invitación es inválido. Por favor revisa e intenta nuevamente.");
+        }
+      } catch (error) {
+        console.error("Error validando el link:", error);
+        alert("❌ El link de invitación es inválido. Por favor revisa e intenta nuevamente.");
+      }
     }
   };
-
+  
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
