@@ -1,6 +1,6 @@
+
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { ZapIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -19,19 +19,6 @@ const GrapesFooter = () => {
               code<span className="text-primary">flex</span>.ai
             </span>
           </Link>
-        </div>
-
-        {/* FOOTER NAVIGATION */}
-        <div className="flex items-center gap-5">
-          <div className="flex items-center gap-4 mr-4">
-            <Button
-              asChild
-              variant="outline"
-              className="ml-2 border-primary/50 text-primary hover:text-white hover:bg-primary/10"
-            >
-              <Link href="/grapesjs">Export Design to Angular</Link>
-            </Button>
-          </div>
         </div>
       </div>
     </footer>

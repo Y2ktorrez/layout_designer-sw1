@@ -1,5 +1,5 @@
 import React from 'react'
-import GrapesFooter from './components/Footer'
+import GrapesFooter from './components/GrapesFooter'
 
 export const metadata = {
   title: "codeflex.ai",
