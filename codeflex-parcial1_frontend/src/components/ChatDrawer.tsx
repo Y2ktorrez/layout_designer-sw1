@@ -1,6 +1,5 @@
 'use client';
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -16,10 +15,18 @@ import { useWebSocket } from "@/context/WebSocketContext";
 export function ChatDrawer() {
   const { messages, sendMessage } = useWebSocket();
   const [newMessage, setNewMessage] = useState("");
-  const currentUsername = typeof window !== "undefined" ? localStorage.getItem("current_username") : "Anonimo";
+  const [currentUsername, setCurrentUsername] = useState("Anonimo");
+  
+  useEffect(() => {
+    // Asegurarse de que esto se ejecute solo en el cliente
+    if (typeof window !== "undefined") {
+      setCurrentUsername(localStorage.getItem("current_username") || "Anonimo");
+    }
+  }, []);
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
+    console.log("Enviando mensaje como usuario:", currentUsername);
     sendMessage(newMessage);
     setNewMessage("");
   };
@@ -44,7 +51,6 @@ export function ChatDrawer() {
         <DrawerHeader>
           <DrawerTitle>Chat en tiempo real</DrawerTitle>
         </DrawerHeader>
-
         <div className="flex-1 overflow-y-auto space-y-4 p-2">
           {messages.length === 0 ? (
             <p className="text-gray-400 text-center">No hay mensajes aún</p>
@@ -53,7 +59,14 @@ export function ChatDrawer() {
               const color = getColorFromUsername(msg.username || "Anonimo");
               const username = msg.username || "Anonimo";
               const isOwnMessage = username === currentUsername;
-
+              
+              console.log(`Mensaje #${index}:`, {
+                username,
+                currentUsername,
+                isOwnMessage,
+                content: msg.content
+              });
+              
               return (
                 <div
                   key={index}
@@ -70,7 +83,6 @@ export function ChatDrawer() {
                       </div>
                     </div>
                   )}
-
                   {msg.type === 'system' && (
                     <div
                       className="p-3 rounded-xl bg-gray-300 text-gray-700 max-w-xs break-words text-center"
@@ -83,12 +95,14 @@ export function ChatDrawer() {
             })
           )}
         </div>
-
         <DrawerFooter className="flex gap-2">
           <Input
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Escribe un mensaje..."
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') handleSendMessage();
+            }}
           />
           <Button onClick={handleSendMessage}>Enviar</Button>
         </DrawerFooter>
