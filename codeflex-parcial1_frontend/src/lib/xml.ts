@@ -2,8 +2,9 @@ import JSZip from "jszip";
 import * as FileSaver from "file-saver";
 import { ParsedClass, ParseModelXml } from "./parce";
 
-export async function ExportXmlAngular(xmlFile: File, projectName = "xml-model-angular-project") {
+export async function ExportXmlAngular(xmlFile: File, projectName = "diagram-project") {
   if (!xmlFile) return;
+
   const xmlText = await xmlFile.text();
   const clases: ParsedClass[] = await ParseModelXml(xmlText);
 
@@ -13,6 +14,16 @@ export async function ExportXmlAngular(xmlFile: File, projectName = "xml-model-a
   zip.file("model.json", JSON.stringify(clases, null, 2));
 
   const script = `#!/usr/bin/env node
+
+console.log(\`
+
+░█▀▀░█▀█░█▀▄░█▀▀░█▀▀░█░░░█▀▀░█░█░░░░█▀█░▀█▀
+░█░░░█░█░█░█░█▀▀░█▀▀░█░░░█▀▀░▄▀▄░░░░█▀█░░█░
+░▀▀▀░▀▀▀░▀▀░░▀▀▀░▀░░░▀▀▀░▀▀▀░▀░▀░▀░░▀░▀░▀▀▀
+
+ \`);
+
+console.log('Generando recursos...');
 
 const { exec } = require("child_process");
 const fs = require("fs/promises");
@@ -24,12 +35,13 @@ const execCmd = (cmd, options = {}) =>
   );
 
 const pascalCase = (str) =>
-  str.replace(/[_\\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : "")).replace(/^./, (c) => c.toUpperCase());
+  str
+    .replace(/[_\\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ""))
+    .replace(/^./, (c) => c.toUpperCase());
 
 const kebabCase = (str) => str.toLowerCase().replace(/[_\\s]+/g, "-");
 
 async function generateAngularProject(appName) {
-  console.log(\`⚙️  Creating Angular project: \${appName}\`);
   await execCmd(\`npx @angular/cli@19 new \${appName} --routing --style=css --skip-install --defaults\`, { stdio: 'inherit' });
 }
 
@@ -46,7 +58,6 @@ async function createComponent(appName, clase) {
 
   await execCmd(\`npx ng generate component pages/\${kebab} --module=app.module.ts\`, { cwd: appName });
   await fs.mkdir(pageDir, { recursive: true });
-  console.log(\`📁 Carpeta creada: \${pageDir}\`);
 
   const ts = \`
 import { Component } from '@angular/core';
@@ -88,7 +99,8 @@ export class \${className} {
   remove(index: number) {
     this.items.splice(index, 1);
   }
-}\`.trim();
+}
+\`.trim();
 
   const html = \`
 <div class="crud-container">
@@ -102,20 +114,20 @@ export class \${className} {
       <input [(ngModel)]="model.\${a.name}" name="\${a.name}" type="text" required />
     </div>\`
       )
-      .join("\`n")}
+      .join("\\n")}
     <button type="submit">{{ editIndex !== null ? 'Actualizar' : 'Agregar' }}</button>
     <button type="button" class="cancel" *ngIf="editIndex !== null" (click)="cancelEdit()">Cancelar</button>
   </form>
   <table>
     <thead>
       <tr>
-        \${clase.attribute.map((a) => \`<th>\${a.name}</th>\`).join("\`n")}
+        \${clase.attribute.map((a) => \`<th>\${a.name}</th>\`).join("\\n")}
         <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let item of items; let i = index">
-        \${clase.attribute.map((a) => \`<td>{{ item.\${a.name } }}</td>\`).join("\`n")}
+        \${clase.attribute.map((a) => \`<td>{{ item.\${a.name} }}</td>\`).join("\\n")}
         <td>
           <button (click)="edit(i)">✏️</button>
           <button (click)="remove(i)">🗑️</button>
@@ -298,58 +310,32 @@ async function waitForFile(filePath, retries = 10, interval = 500) {
 
 async function main() {
   const appName = path.basename(__filename, ".js");
-  if (!appName) return console.error("❌ Nombre inválido de proyecto.");
+  if (!appName) process.exit(1);
 
   await generateAngularProject(appName);
   const valid = await copyModelJson(appName);
 
   for (const clase of valid) {
-    console.log("🛠️  Generando componente para:", clase.name);
     await createComponent(appName, clase);
   }
 
   await generateRoutes(appName, valid);
   await updateAppComponent(appName, valid);
 
-  console.log("⏳ Esperando que se genere package.json...");
   await waitForFile(path.join(appName, "package.json"));
-
-  console.log("📦 Instalando dependencias...");
   await execCmd("npm install", { cwd: appName });
 
-  console.log(\`✅ Proyecto listo. Ejecuta:\ncd \${appName} && npm start\`);
+console.log(\`✅ Todo Listo. Haz un:\ncd \${appName} && npm start\`);
+  
 }
 
-main().catch((err) => {
-  console.error("❌ Error:", err);
+main().catch(() => {
   process.exit(1);
 });
 `;
 
   zip.file(`${projectName}.js`, script, { unixPermissions: "755" });
 
-  const readme = `
-# 🚀 Cómo generar el proyecto Angular
-
-1. **Descomprime** el archivo ZIP exportado.
-2. **Abre una terminal** en la carpeta donde descomprimiste el archivo.
-3. Ejecuta:
-   \`\`\`
-   node \`\${projectName}.js\`
-   \`\`\`
-4. Cuando termine, entra a la carpeta del proyecto:
-   \`\`\`
-   cd \`\${projectName}\`
-   \`\`\`
-5. Iniciá el servidor:
-   \`\`\`
-   npm run start
-   \`\`\`
-6. Abre el navegador en [http://localhost:4200](http://localhost:4200)
-> **Requisitos**: Node.js y conexión a Internet.
-`;
-  zip.file("README.txt", readme.trim());
-
   const blob = await zip.generateAsync({ type: "blob" });
-  FileSaver.saveAs(blob, `${projectName}-bootstrap.zip`);
+  FileSaver.saveAs(blob, `${projectName}-codeflex.zip`);
 }
