@@ -7,7 +7,7 @@ import type { Editor } from '@grapesjs/studio-sdk/dist/typeConfigs/gjsExtend.js'
 export async function BocetoImport(
   editor: Editor,
   imageFile: File,
-  pageName = 'imagen-a-html'
+  pageName = 'codeflex'
 ) {
   const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
   if (!apiKey) throw new Error('NEXT_PUBLIC_OPENAI_API_KEY env var missing');

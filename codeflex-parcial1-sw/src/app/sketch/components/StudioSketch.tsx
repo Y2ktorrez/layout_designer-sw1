@@ -96,19 +96,16 @@ export default function StudioEditorComponent({ onReady }: StudioEditorComponent
         lightGalleryComponent.init({}),
       ],
       onReady: (editor) => {
-        // 3) Guardamos la instancia y notificamos al padre
         editorRef.current = editor;
         onReady(editor);
       },
     });
 
-    // 4) Cleanup al desmontar: destruimos el editor si existe
     return () => {
       editorRef.current?.destroy();
     };
   }, [onReady]);
 
-  // 5) El contenedor donde se monta el editor
   return (
     <div
       id="studio-editor"

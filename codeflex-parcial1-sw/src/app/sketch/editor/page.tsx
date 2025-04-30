@@ -18,7 +18,7 @@ export default function EditorPage() {
       const loadBoceto = async () => {
         try {
           await BocetoImport(editor, imageFile);
-          setImageFile(null); // Limpiar después
+          setImageFile(null); 
         } catch (error) {
           console.error('Error cargando boceto:', error);
         }
